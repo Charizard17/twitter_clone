@@ -36,7 +36,8 @@ class _WelcomePageState extends State<WelcomePage> {
               height: double.maxFinite,
               decoration: BoxDecoration(
                   image: DecorationImage(
-                      image: AssetImage("img/" + images.keys.elementAt(index)),
+                      image: AssetImage(
+                          "assets/images/" + images.keys.elementAt(index)),
                       fit: BoxFit.cover)),
               child: Container(
                   margin: const EdgeInsets.only(top: 150, left: 20, right: 20),
