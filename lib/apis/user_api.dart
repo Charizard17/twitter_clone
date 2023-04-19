@@ -3,63 +3,40 @@ import 'package:fpdart/fpdart.dart';
 import 'package:twitter_clone/constants/constants.dart';
 import 'package:twitter_clone/core/core.dart';
 import 'package:twitter_clone/models/models.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
-// final userAPIProvider = Provider((ref) {
-//   return FirebaseUserAPI(
-//     db: ref.watch(appwriteDatabaseProvider),
-//   );
-// });
+final userAPIProvider = Provider((ref) {
+  return FirebaseUserAPI();
+});
 
-// abstract class IUserAPI {
-//   FutureEitherVoid saveUserData(UserModel userModel);
-//   Future<Document> getUserData(String uid);
-// }
+abstract class IUserAPI {
+  FutureEitherVoid saveUserData(UserModel userModel);
+  Future getUserData(String uid);
+}
 
-// class FirebaseUserAPI implements IUserAPI {
-//   @override
-//   Future getUserData(String uid) {
-//     // TODO: implement getUserData
-//     throw UnimplementedError();
-//   }
+class FirebaseUserAPI implements IUserAPI {
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  CollectionReference get _users =>
+      _firestore.collection(FirebaseConstants.usersCollection);
 
-//   @override
-//   FutureEitherVoid saveUserData(UserModel userModel) {
-//     // TODO: implement saveUserData
-//     throw UnimplementedError();
-//   }
+  @override
+  FutureEitherVoid saveUserData(UserModel userModel) async {
+    try {
+      await _users.doc(userModel.uid).set(userModel.toMap());
+      return right(null);
+    } on FirebaseException catch (e, st) {
+      return left(
+        Failure(e.message ?? 'Some unexpected error occured', st),
+      );
+    } catch (e, st) {
+      return left(
+        Failure(e.toString(), st),
+      );
+    }
+  }
 
-// }
-
-// class UserAPI implements IUserAPI {
-//   final Databases _db;
-//   UserAPI({required Databases db}) : _db = db;
-//   @override
-//   FutureEitherVoid saveUserData(UserModel userModel) async {
-//     try {
-//       await _db.createDocument(
-//         databaseId: '643d2b0fbdfe980d0f0b',
-//         collectionId: '643e6e001e55755b6fd5',
-//         documentId: userModel.uid,
-//         data: userModel.toMap(),
-//       );
-//       return right(null);
-//     } on AppwriteException catch (e, st) {
-//       return left(
-//         Failure(e.message ?? 'Some unexpected error occured', st),
-//       );
-//     } catch (e, st) {
-//       return left(
-//         Failure(e.toString(), st),
-//       );
-//     }
-//   }
-
-//   @override
-//   Future<Document> getUserData(String uid) {
-//     return _db.getDocument(
-//       databaseId: AppWriteConstants.databaseId,
-//       collectionId: AppWriteConstants.usersCollection,
-//       documentId: uid,
-//     );
-//   }
-// }
+  @override
+  Future getUserData(String uid) async {
+    return _users.doc(uid).get();
+  }
+}

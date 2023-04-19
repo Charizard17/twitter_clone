@@ -17,7 +17,7 @@ class CreateTweetScreen extends ConsumerStatefulWidget {
 class _CreateTweetScreenState extends ConsumerState<CreateTweetScreen> {
   @override
   Widget build(BuildContext context) {
-    // final currentUser = ref.watch(currentUserDetailsProvider);
+    final currentUser = ref.watch(currentUserDetailsProvider).value;
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
@@ -36,27 +36,25 @@ class _CreateTweetScreenState extends ConsumerState<CreateTweetScreen> {
           )
         ],
       ),
-      body:
-          // currentUser == null
-          //     ? const Loader()
-          //     :
-          SafeArea(
-        child: SingleChildScrollView(
-          child: Column(
-            children: [
-              Row(
-                children: [
-                  // CircleAvatar(
-                  //   backgroundImage: NetworkImage(
-                  //     '',
-                  //   ),
-                  // )
-                ],
+      body: currentUser == null
+          ? const Loader()
+          : SafeArea(
+              child: SingleChildScrollView(
+                child: Column(
+                  children: [
+                    Row(
+                      children: [
+                        CircleAvatar(
+                          backgroundImage: NetworkImage(
+                            currentUser.profilePic,
+                          ),
+                        )
+                      ],
+                    ),
+                  ],
+                ),
               ),
-            ],
-          ),
-        ),
-      ),
+            ),
     );
   }
 }

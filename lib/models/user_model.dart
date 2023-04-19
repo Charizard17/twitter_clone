@@ -2,111 +2,101 @@ import 'package:flutter/foundation.dart';
 
 @immutable
 class UserModel {
-  final String email;
+  final String uid;
   final String name;
-  final List<String> followers;
-  final List<String> following;
   final String profilePic;
   final String bannerPic;
-  final String uid;
   final String bio;
+  final List<String> followers;
+  final List<String> following;
   final bool isTwitterLime;
-  const UserModel({
-    required this.email,
+  UserModel({
+    required this.uid,
     required this.name,
-    required this.followers,
-    required this.following,
     required this.profilePic,
     required this.bannerPic,
-    required this.uid,
     required this.bio,
+    required this.followers,
+    required this.following,
     required this.isTwitterLime,
   });
 
   UserModel copyWith({
-    String? email,
+    String? uid,
     String? name,
-    List<String>? followers,
-    List<String>? following,
     String? profilePic,
     String? bannerPic,
-    String? uid,
     String? bio,
+    List<String>? followers,
+    List<String>? following,
     bool? isTwitterLime,
   }) {
     return UserModel(
-      email: email ?? this.email,
+      uid: uid ?? this.uid,
       name: name ?? this.name,
-      followers: followers ?? this.followers,
-      following: following ?? this.following,
       profilePic: profilePic ?? this.profilePic,
       bannerPic: bannerPic ?? this.bannerPic,
-      uid: uid ?? this.uid,
       bio: bio ?? this.bio,
+      followers: followers ?? this.followers,
+      following: following ?? this.following,
       isTwitterLime: isTwitterLime ?? this.isTwitterLime,
     );
   }
 
   Map<String, dynamic> toMap() {
-    final result = <String, dynamic>{};
-
-    result.addAll({'email': email});
-    result.addAll({'name': name});
-    result.addAll({'followers': followers});
-    result.addAll({'following': following});
-    result.addAll({'profilePic': profilePic});
-    result.addAll({'bannerPic': bannerPic});
-    result.addAll({'bio': bio});
-    result.addAll({'isTwitterLime': isTwitterLime});
-
-    return result;
+    return <String, dynamic>{
+      'uid': uid,
+      'name': name,
+      'profilePic': profilePic,
+      'bannerPic': bannerPic,
+      'bio': bio,
+      'followers': followers,
+      'following': following,
+      'isTwitterLime': isTwitterLime,
+    };
   }
 
   factory UserModel.fromMap(Map<String, dynamic> map) {
     return UserModel(
-      email: map['email'] ?? '',
+      uid: map['uid'] ?? '',
       name: map['name'] ?? '',
-      followers: List<String>.from(map['followers']),
-      following: List<String>.from(map['following']),
       profilePic: map['profilePic'] ?? '',
       bannerPic: map['bannerPic'] ?? '',
-      uid: map['\$id'] ?? '',
       bio: map['bio'] ?? '',
+      followers: List<String>.from((map['followers'])),
+      following: List<String>.from((map['following'])),
       isTwitterLime: map['isTwitterLime'] ?? false,
     );
   }
 
   @override
   String toString() {
-    return 'UserModel(email: $email, name: $name, followers: $followers, following: $following, profilePic: $profilePic, bannerPic: $bannerPic, uid: $uid, bio: $bio, isTwitterLime: $isTwitterLime)';
+    return 'UserModel(uid: $uid, name: $name, profilePic: $profilePic, bannerPic: $bannerPic, bio: $bio, followers: $followers, following: $following, isTwitterLime: $isTwitterLime)';
   }
 
   @override
-  bool operator ==(Object other) {
+  bool operator ==(covariant UserModel other) {
     if (identical(this, other)) return true;
 
-    return other is UserModel &&
-        other.email == email &&
+    return other.uid == uid &&
         other.name == name &&
-        listEquals(other.followers, followers) &&
-        listEquals(other.following, following) &&
         other.profilePic == profilePic &&
         other.bannerPic == bannerPic &&
-        other.uid == uid &&
         other.bio == bio &&
+        listEquals(other.followers, followers) &&
+        listEquals(other.following, following) &&
         other.isTwitterLime == isTwitterLime;
   }
 
   @override
   int get hashCode {
-    return email.hashCode ^
+    return uid.hashCode ^
         name.hashCode ^
-        followers.hashCode ^
-        following.hashCode ^
         profilePic.hashCode ^
         bannerPic.hashCode ^
-        uid.hashCode ^
         bio.hashCode ^
+        followers.hashCode ^
+        following.hashCode ^
         isTwitterLime.hashCode;
   }
 }

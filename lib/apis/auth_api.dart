@@ -3,9 +3,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:fpdart/fpdart.dart';
 import 'package:twitter_clone/core/core.dart';
 
-// want signup or want to get user account -> Account
-// want to access user related data -> User
-
 final authAPIProvider = Provider((ref) {
   return FirebaseAuthAPI();
 });
@@ -45,7 +42,7 @@ class FirebaseAuthAPI implements IAuthAPI {
         password: password,
       );
       return right(account);
-    } on FirebaseException catch (e, stackTrace) {
+    } on FirebaseAuthException catch (e, stackTrace) {
       return left(
           Failure(e.message ?? 'Some unexpected error occured', stackTrace));
     } catch (e, stackTrace) {
@@ -64,7 +61,7 @@ class FirebaseAuthAPI implements IAuthAPI {
         password: password,
       );
       return right(account);
-    } on FirebaseException catch (e, stackTrace) {
+    } on FirebaseAuthException catch (e, stackTrace) {
       return left(
           Failure(e.message ?? 'Some unexpected error occured', stackTrace));
     } catch (e, stackTrace) {
