@@ -48,29 +48,31 @@ class UserModel {
   }
 
   Map<String, dynamic> toMap() {
-    return <String, dynamic>{
-      'email': email,
-      'name': name,
-      'followers': followers,
-      'following': following,
-      'profilePic': profilePic,
-      'bannerPic': bannerPic,
-      'bio': bio,
-      'isTwitterLime': isTwitterLime,
-    };
+    final result = <String, dynamic>{};
+
+    result.addAll({'email': email});
+    result.addAll({'name': name});
+    result.addAll({'followers': followers});
+    result.addAll({'following': following});
+    result.addAll({'profilePic': profilePic});
+    result.addAll({'bannerPic': bannerPic});
+    result.addAll({'bio': bio});
+    result.addAll({'isTwitterLime': isTwitterLime});
+
+    return result;
   }
 
   factory UserModel.fromMap(Map<String, dynamic> map) {
     return UserModel(
-      email: map['email'] as String,
-      name: map['name'] as String,
-      followers: List<String>.from((map['followers'] as List<String>)),
-      following: List<String>.from((map['following'] as List<String>)),
-      profilePic: map['profilePic'] as String,
-      bannerPic: map['bannerPic'] as String,
-      uid: map['\$id'] as String,
-      bio: map['bio'] as String,
-      isTwitterLime: map['isTwitterLime'] as bool,
+      email: map['email'] ?? '',
+      name: map['name'] ?? '',
+      followers: List<String>.from(map['followers']),
+      following: List<String>.from(map['following']),
+      profilePic: map['profilePic'] ?? '',
+      bannerPic: map['bannerPic'] ?? '',
+      uid: map['\$id'] ?? '',
+      bio: map['bio'] ?? '',
+      isTwitterLime: map['isTwitterLime'] ?? false,
     );
   }
 
@@ -80,10 +82,11 @@ class UserModel {
   }
 
   @override
-  bool operator ==(covariant UserModel other) {
+  bool operator ==(Object other) {
     if (identical(this, other)) return true;
 
-    return other.email == email &&
+    return other is UserModel &&
+        other.email == email &&
         other.name == name &&
         listEquals(other.followers, followers) &&
         listEquals(other.following, following) &&

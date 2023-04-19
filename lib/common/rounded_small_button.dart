@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/src/widgets/framework.dart';
-import 'package:flutter/src/widgets/placeholder.dart';
 import 'package:twitter_clone/theme/pallete.dart';
 
 class RoundedSmallButton extends StatelessWidget {
