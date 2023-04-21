@@ -1,6 +1,3 @@
-// ignore_for_file: public_member_api_docs, sort_constructors_first
-import 'dart:convert';
-
 import 'package:flutter/foundation.dart';
 
 import 'package:twitter_clone/core/core.dart';
@@ -18,7 +15,7 @@ class TweetModel {
   final List<String> commentIds;
   final String id;
   final int reshareCount;
-  TweetModel({
+  const TweetModel({
     required this.text,
     required this.hashtags,
     required this.link,
@@ -72,6 +69,7 @@ class TweetModel {
     result.addAll({'tweetedAt': tweetedAt.millisecondsSinceEpoch});
     result.addAll({'likes': likes});
     result.addAll({'commentIds': commentIds});
+    result.addAll({'id': id});
     result.addAll({'reshareCount': reshareCount});
 
     return result;
@@ -88,7 +86,7 @@ class TweetModel {
       tweetedAt: DateTime.fromMillisecondsSinceEpoch(map['tweetedAt']),
       likes: List<String>.from((map['likes'])),
       commentIds: List<String>.from((map['commentIds'])),
-      id: map['\$id'] ?? '',
+      id: map['id'] ?? '',
       reshareCount: map['reshareCount']?.toInt() ?? 0,
     );
   }

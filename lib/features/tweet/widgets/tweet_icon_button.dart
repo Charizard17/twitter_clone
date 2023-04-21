@@ -27,7 +27,10 @@ class TweetIconButton extends StatelessWidget {
             margin: const EdgeInsets.all(6),
             child: Text(
               text,
-              style: const TextStyle(fontSize: 16, color: Pallete.greyColor),
+              style: const TextStyle(
+                fontSize: 16,
+                color: Pallete.whiteColor,
+              ),
             ),
           ),
         ],

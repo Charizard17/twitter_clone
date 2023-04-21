@@ -14,6 +14,7 @@ abstract class ITweetAPI {
   FutureEitherVoid shareTweet(TweetModel tweet);
   Future<List<TweetModel>> getTweets();
   Stream<List<TweetModel>> getTweetsStream();
+  FutureEither likeTweet(TweetModel tweet);
 }
 
 class TweetAPI implements ITweetAPI {
@@ -27,9 +28,10 @@ class TweetAPI implements ITweetAPI {
 
   @override
   FutureEitherVoid shareTweet(TweetModel tweet) async {
-    final uuid = Uuid();
     try {
-      await _tweets.doc(uuid.v1()).set(tweet.toMap());
+      final uuid = const Uuid().v1();
+      tweet = tweet.copyWith(id: uuid);
+      await _tweets.doc(uuid).set(tweet.toMap());
       return right(null);
     } on FirebaseException catch (e, st) {
       return left(
@@ -56,8 +58,27 @@ class TweetAPI implements ITweetAPI {
 
   @override
   Stream<List<TweetModel>> getTweetsStream() {
-    return _tweetsStream.map((snapshot) => snapshot.docs
+    final tweetsStream = _tweetsStream.map((snapshot) => snapshot.docs
         .map((doc) => TweetModel.fromMap(doc.data() as Map<String, dynamic>))
         .toList());
+    return tweetsStream;
+  }
+
+  @override
+  FutureEither likeTweet(TweetModel tweet) async {
+    try {
+      await _tweets.doc(tweet.id).update({
+        FirebaseConstants.likes: tweet.likes,
+      });
+      return right(null);
+    } on FirebaseException catch (e, st) {
+      return left(
+        Failure(e.message ?? 'Some unexpected error occured', st),
+      );
+    } catch (e, st) {
+      return left(
+        Failure(e.toString(), st),
+      );
+    }
   }
 }
