@@ -12,6 +12,7 @@ final tweetAPIProvider = Provider((ref) {
 
 abstract class ITweetAPI {
   FutureEitherVoid shareTweet(TweetModel tweet);
+  Future<List<TweetModel>> getTweets();
 }
 
 class TweetAPI implements ITweetAPI {
@@ -34,5 +35,15 @@ class TweetAPI implements ITweetAPI {
         Failure(e.toString(), st),
       );
     }
+  }
+
+  @override
+  Future<List<TweetModel>> getTweets() async {
+    final tweets = await _tweets.orderBy('tweetedAt', descending: true).get();
+    final List<TweetModel> tweetList = [];
+    for (final doc in tweets.docs) {
+      tweetList.add(TweetModel.fromMap(doc.data() as Map<String, dynamic>));
+    }
+    return tweetList;
   }
 }

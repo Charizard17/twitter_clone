@@ -3,6 +3,7 @@ import 'package:flutter/foundation.dart';
 @immutable
 class UserModel {
   final String uid;
+  final String username;
   final String name;
   final String profilePic;
   final String bannerPic;
@@ -12,6 +13,7 @@ class UserModel {
   final bool isTwitterLime;
   UserModel({
     required this.uid,
+    required this.username,
     required this.name,
     required this.profilePic,
     required this.bannerPic,
@@ -23,6 +25,7 @@ class UserModel {
 
   UserModel copyWith({
     String? uid,
+    String? username,
     String? name,
     String? profilePic,
     String? bannerPic,
@@ -33,6 +36,7 @@ class UserModel {
   }) {
     return UserModel(
       uid: uid ?? this.uid,
+      username: username ?? this.username,
       name: name ?? this.name,
       profilePic: profilePic ?? this.profilePic,
       bannerPic: bannerPic ?? this.bannerPic,
@@ -46,6 +50,7 @@ class UserModel {
   Map<String, dynamic> toMap() {
     return <String, dynamic>{
       'uid': uid,
+      'username': username,
       'name': name,
       'profilePic': profilePic,
       'bannerPic': bannerPic,
@@ -59,6 +64,7 @@ class UserModel {
   factory UserModel.fromMap(Map<String, dynamic> map) {
     return UserModel(
       uid: map['uid'] ?? '',
+      username: map['username'] ?? '',
       name: map['name'] ?? '',
       profilePic: map['profilePic'] ?? '',
       bannerPic: map['bannerPic'] ?? '',
@@ -71,7 +77,7 @@ class UserModel {
 
   @override
   String toString() {
-    return 'UserModel(uid: $uid, name: $name, profilePic: $profilePic, bannerPic: $bannerPic, bio: $bio, followers: $followers, following: $following, isTwitterLime: $isTwitterLime)';
+    return 'UserModel(uid: $uid, username: $username, name: $name, profilePic: $profilePic, bannerPic: $bannerPic, bio: $bio, followers: $followers, following: $following, isTwitterLime: $isTwitterLime)';
   }
 
   @override
@@ -79,6 +85,7 @@ class UserModel {
     if (identical(this, other)) return true;
 
     return other.uid == uid &&
+        other.username == username &&
         other.name == name &&
         other.profilePic == profilePic &&
         other.bannerPic == bannerPic &&
@@ -91,6 +98,7 @@ class UserModel {
   @override
   int get hashCode {
     return uid.hashCode ^
+        username.hashCode ^
         name.hashCode ^
         profilePic.hashCode ^
         bannerPic.hashCode ^

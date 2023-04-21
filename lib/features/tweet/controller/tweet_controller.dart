@@ -2,9 +2,11 @@ import 'dart:io';
 
 import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:fpdart/src/either.dart';
 import 'package:twitter_clone/apis/storage_api.dart';
 import 'package:twitter_clone/apis/tweet_api.dart';
 import 'package:twitter_clone/core/enums/tweet_type_enum.dart';
+import 'package:twitter_clone/core/failure.dart';
 import 'package:twitter_clone/core/utils.dart';
 import 'package:twitter_clone/features/auth/controller/auth_controller.dart';
 import 'package:twitter_clone/models/models.dart';
@@ -19,6 +21,11 @@ final tweetControllerProvider = StateNotifierProvider<TweetController, bool>(
   },
 );
 
+final getTweetsProvider = FutureProvider((ref) {
+  final tweetController = ref.watch(tweetControllerProvider.notifier);
+  return tweetController.getTweets();
+});
+
 class TweetController extends StateNotifier<bool> {
   final TweetAPI _tweetAPI;
   final StorageAPI _storageAPI;
@@ -31,6 +38,11 @@ class TweetController extends StateNotifier<bool> {
         _tweetAPI = tweetAPI,
         _storageAPI = storageAPI,
         super(false);
+
+  Future<List<TweetModel>> getTweets() async {
+    final tweetList = await _tweetAPI.getTweets();
+    return tweetList;
+  }
 
   void shareTweet({
     required List<File> images,
@@ -56,7 +68,7 @@ class TweetController extends StateNotifier<bool> {
   }) async {
     state = true;
     final hashtags = _getHashtagsFromText(text);
-    String link = _getLinkFromText(text);
+    final String link = _getLinkFromText(text);
     final user = _ref.read(currentUserDetailsProvider).value!;
     final imageLinks = await _storageAPI.uploadImages(images);
     TweetModel tweet = TweetModel(
@@ -83,7 +95,7 @@ class TweetController extends StateNotifier<bool> {
   }) async {
     state = true;
     final hashtags = _getHashtagsFromText(text);
-    String link = _getLinkFromText(text);
+    final String link = _getLinkFromText(text);
     final user = _ref.read(currentUserDetailsProvider).value!;
     TweetModel tweet = TweetModel(
       text: text,
@@ -107,9 +119,7 @@ class TweetController extends StateNotifier<bool> {
     String link = '';
     List<String> wordsInSentence = text.split(' ');
     for (String word in wordsInSentence) {
-      if (word.startsWith('https://') ||
-          word.startsWith('http://') ||
-          word.startsWith('www.')) {
+      if (word.startsWith('https://') || word.startsWith('www.')) {
         link = word;
       }
     }

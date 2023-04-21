@@ -46,13 +46,7 @@ class _HomeViewState extends ConsumerState<HomeView> {
       appBar: appBar,
       body: IndexedStack(
         index: _page,
-        // children: UIConstants.bottomTabBarPages,
-        children: [
-          ElevatedButton(
-            child: Text('Logout'),
-            onPressed: onSignOut,
-          ),
-        ],
+        children: UIConstants.bottomTabBarPages,
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: onCreateTweet,
