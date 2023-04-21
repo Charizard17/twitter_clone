@@ -13,12 +13,17 @@ final tweetAPIProvider = Provider((ref) {
 abstract class ITweetAPI {
   FutureEitherVoid shareTweet(TweetModel tweet);
   Future<List<TweetModel>> getTweets();
+  Stream<List<TweetModel>> getTweetsStream();
 }
 
 class TweetAPI implements ITweetAPI {
-  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  FirebaseFirestore get _firestore => FirebaseFirestore.instance;
   CollectionReference get _tweets =>
       _firestore.collection(FirebaseConstants.tweetsCollection);
+  Stream<QuerySnapshot> get _tweetsStream => FirebaseFirestore.instance
+      .collection(FirebaseConstants.tweetsCollection)
+      .orderBy(FirebaseConstants.tweetedAt, descending: true)
+      .snapshots();
 
   @override
   FutureEitherVoid shareTweet(TweetModel tweet) async {
@@ -39,11 +44,20 @@ class TweetAPI implements ITweetAPI {
 
   @override
   Future<List<TweetModel>> getTweets() async {
-    final tweets = await _tweets.orderBy('tweetedAt', descending: true).get();
+    final tweets = await _tweets
+        .orderBy(FirebaseConstants.tweetedAt, descending: true)
+        .get();
     final List<TweetModel> tweetList = [];
     for (final doc in tweets.docs) {
       tweetList.add(TweetModel.fromMap(doc.data() as Map<String, dynamic>));
     }
     return tweetList;
+  }
+
+  @override
+  Stream<List<TweetModel>> getTweetsStream() {
+    return _tweetsStream.map((snapshot) => snapshot.docs
+        .map((doc) => TweetModel.fromMap(doc.data() as Map<String, dynamic>))
+        .toList());
   }
 }

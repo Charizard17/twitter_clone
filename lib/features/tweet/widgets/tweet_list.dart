@@ -9,7 +9,7 @@ class TweetList extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return ref.watch(getTweetsProvider).when(
+    return ref.watch(getTweetsStreamProvider).when(
           data: (tweets) {
             return ListView.builder(
               itemCount: tweets.length,
