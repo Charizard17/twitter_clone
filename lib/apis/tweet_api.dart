@@ -15,6 +15,7 @@ abstract class ITweetAPI {
   Future<List<TweetModel>> getTweets();
   Stream<List<TweetModel>> getTweetsStream();
   FutureEither likeTweet(TweetModel tweet);
+  FutureEither updateReshareCount(TweetModel tweet);
 }
 
 class TweetAPI implements ITweetAPI {
@@ -69,6 +70,24 @@ class TweetAPI implements ITweetAPI {
     try {
       await _tweets.doc(tweet.id).update({
         FirebaseConstants.likes: tweet.likes,
+      });
+      return right(null);
+    } on FirebaseException catch (e, st) {
+      return left(
+        Failure(e.message ?? 'Some unexpected error occured', st),
+      );
+    } catch (e, st) {
+      return left(
+        Failure(e.toString(), st),
+      );
+    }
+  }
+
+  @override
+  FutureEither updateReshareCount(TweetModel tweet) async {
+    try {
+      await _tweets.doc(tweet.id).update({
+        FirebaseConstants.reshareCount: tweet.reshareCount,
       });
       return right(null);
     } on FirebaseException catch (e, st) {

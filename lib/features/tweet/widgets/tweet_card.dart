@@ -45,6 +45,25 @@ class TweetCard extends ConsumerWidget {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
+                              if (tweet.retweetedBy.isNotEmpty)
+                                Row(
+                                  children: [
+                                    SvgPicture.asset(
+                                      AssetsConstants.retweetIcon,
+                                      color: Pallete.greyColor,
+                                      height: 20,
+                                    ),
+                                    const SizedBox(width: 2),
+                                    Text(
+                                      ' ${tweet.retweetedBy}  Retweeted',
+                                      style: const TextStyle(
+                                        color: Pallete.greyColor,
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                  ],
+                                ),
                               Row(
                                 children: [
                                   Container(
@@ -102,7 +121,16 @@ class TweetCard extends ConsumerWidget {
                                     TweetIconButton(
                                       pathName: AssetsConstants.retweetIcon,
                                       text: tweet.reshareCount.toString(),
-                                      onTap: () {},
+                                      onTap: () {
+                                        ref
+                                            .read(tweetControllerProvider
+                                                .notifier)
+                                            .reshareTweet(
+                                              tweet,
+                                              currentUser,
+                                              context,
+                                            );
+                                      },
                                     ),
                                     LikeButton(
                                       size: 25,

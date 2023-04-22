@@ -6,4 +6,5 @@ class FirebaseConstants {
   // parameters
   static const tweetedAt = 'tweetedAt';
   static const likes = 'likes';
+  static const reshareCount = 'reshareCount';
 }
