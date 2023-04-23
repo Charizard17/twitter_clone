@@ -39,10 +39,10 @@ final currentUserAccountProvider = FutureProvider((ref) {
 
 class AuthController extends StateNotifier<bool> {
   final FirebaseAuthAPI _authAPI;
-  final FirebaseUserAPI _userAPI;
+  final UserAPI _userAPI;
   AuthController({
     required FirebaseAuthAPI authAPI,
-    required FirebaseUserAPI userAPI,
+    required UserAPI userAPI,
   })  : _authAPI = authAPI,
         _userAPI = userAPI,
         super(false);

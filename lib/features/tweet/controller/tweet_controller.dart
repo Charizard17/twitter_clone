@@ -4,6 +4,7 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:twitter_clone/apis/storage_api.dart';
 import 'package:twitter_clone/apis/tweet_api.dart';
+import 'package:twitter_clone/apis/user_api.dart';
 import 'package:twitter_clone/core/enums/tweet_type_enum.dart';
 import 'package:twitter_clone/core/utils.dart';
 import 'package:twitter_clone/features/auth/controller/auth_controller.dart';
@@ -16,6 +17,7 @@ final tweetControllerProvider = StateNotifierProvider<TweetController, bool>(
       ref: ref,
       tweetAPI: ref.watch(tweetAPIProvider),
       storageAPI: ref.watch(storageAPIProvider),
+      userAPI: ref.watch(userAPIProvider),
     );
   },
 );
@@ -25,22 +27,35 @@ final getTweetsProvider = FutureProvider((ref) {
   return tweetController.getTweets();
 });
 
+final getRepliesProvider = FutureProvider.family((ref, TweetModel tweet) {
+  final tweetController = ref.watch(tweetControllerProvider.notifier);
+  return tweetController.getReplies(tweet);
+});
+
 final getTweetsStreamProvider = StreamProvider.autoDispose((ref) {
   final tweetAPI = ref.watch(tweetAPIProvider);
   return tweetAPI.getTweetsStream();
 });
 
+final getUsernameProvider = FutureProvider.family((ref, String uid) {
+  final tweetController = ref.watch(tweetControllerProvider.notifier);
+  return tweetController.getUsernameFromUid(uid);
+});
+
 class TweetController extends StateNotifier<bool> {
   final TweetAPI _tweetAPI;
   final StorageAPI _storageAPI;
+  final UserAPI _userAPI;
   final Ref _ref;
   TweetController({
     required Ref ref,
     required TweetAPI tweetAPI,
     required StorageAPI storageAPI,
+    required UserAPI userAPI,
   })  : _ref = ref,
         _tweetAPI = tweetAPI,
         _storageAPI = storageAPI,
+        _userAPI = userAPI,
         super(false);
 
   Future<List<TweetModel>> getTweets() async {
@@ -96,6 +111,7 @@ class TweetController extends StateNotifier<bool> {
   void shareTweet({
     required List<File> images,
     required String text,
+    required String repliedTo,
     required BuildContext context,
   }) {
     if (text.isEmpty) {
@@ -104,15 +120,22 @@ class TweetController extends StateNotifier<bool> {
     }
 
     if (images.isNotEmpty) {
-      _shareImageTweet(images: images, text: text, context: context);
+      _shareImageTweet(
+          images: images, text: text, repliedTo: repliedTo, context: context);
     } else {
-      _shareTextTweet(text: text, context: context);
+      _shareTextTweet(text: text, repliedTo: repliedTo, context: context);
     }
+  }
+
+  Future<List<TweetModel>> getReplies(TweetModel tweet) async {
+    final tweetList = await _tweetAPI.getReplies(tweet);
+    return tweetList;
   }
 
   void _shareImageTweet({
     required List<File> images,
     required String text,
+    required String repliedTo,
     required BuildContext context,
   }) async {
     state = true;
@@ -133,6 +156,7 @@ class TweetController extends StateNotifier<bool> {
       id: '',
       reshareCount: 0,
       retweetedBy: '',
+      repliedTo: repliedTo,
     );
     final res = await _tweetAPI.shareTweet(tweet);
     state = false;
@@ -141,6 +165,7 @@ class TweetController extends StateNotifier<bool> {
 
   void _shareTextTweet({
     required String text,
+    required String repliedTo,
     required BuildContext context,
   }) async {
     state = true;
@@ -160,6 +185,7 @@ class TweetController extends StateNotifier<bool> {
       id: '',
       reshareCount: 0,
       retweetedBy: '',
+      repliedTo: repliedTo,
     );
     final res = await _tweetAPI.shareTweet(tweet);
     state = false;
@@ -186,5 +212,12 @@ class TweetController extends StateNotifier<bool> {
       }
     }
     return hashtags;
+  }
+
+  Future<String> getUsernameFromUid(String uid) async {
+    final document = await _userAPI.getUserFromUid(uid);
+    final data = document.data()!;
+    final user = UserModel.fromMap(data);
+    return user.username;
   }
 }

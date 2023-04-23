@@ -16,6 +16,7 @@ class TweetModel {
   final String id;
   final int reshareCount;
   final String retweetedBy;
+  final String repliedTo;
   const TweetModel({
     required this.text,
     required this.hashtags,
@@ -29,22 +30,23 @@ class TweetModel {
     required this.id,
     required this.reshareCount,
     required this.retweetedBy,
+    required this.repliedTo,
   });
 
-  TweetModel copyWith({
-    String? text,
-    List<String>? hashtags,
-    String? link,
-    List<String>? imageLinks,
-    String? uid,
-    TweetType? tweetType,
-    DateTime? tweetedAt,
-    List<String>? likes,
-    List<String>? commentIds,
-    String? id,
-    int? reshareCount,
-    String? retweetedBy,
-  }) {
+  TweetModel copyWith(
+      {String? text,
+      List<String>? hashtags,
+      String? link,
+      List<String>? imageLinks,
+      String? uid,
+      TweetType? tweetType,
+      DateTime? tweetedAt,
+      List<String>? likes,
+      List<String>? commentIds,
+      String? id,
+      int? reshareCount,
+      String? retweetedBy,
+      String? repliedTo}) {
     return TweetModel(
       text: text ?? this.text,
       hashtags: hashtags ?? this.hashtags,
@@ -58,6 +60,7 @@ class TweetModel {
       id: id ?? this.id,
       reshareCount: reshareCount ?? this.reshareCount,
       retweetedBy: retweetedBy ?? this.retweetedBy,
+      repliedTo: repliedTo ?? this.repliedTo,
     );
   }
 
@@ -76,6 +79,7 @@ class TweetModel {
     result.addAll({'id': id});
     result.addAll({'reshareCount': reshareCount});
     result.addAll({'retweetedBy': retweetedBy});
+    result.addAll({'repliedTo': repliedTo});
 
     return result;
   }
@@ -94,12 +98,13 @@ class TweetModel {
       id: map['id'] ?? '',
       reshareCount: map['reshareCount']?.toInt() ?? 0,
       retweetedBy: map['retweetedBy'] ?? '',
+      repliedTo: map['repliedTo'] ?? '',
     );
   }
 
   @override
   String toString() {
-    return 'Tweet(text: $text, hashtags: $hashtags, link: $link, imageLinks: $imageLinks, uid: $uid, tweetType: $tweetType, tweetedAt: $tweetedAt, likes: $likes, commentIds: $commentIds, id: $id, reshareCount: $reshareCount, retweetedBy: $retweetedBy)';
+    return 'Tweet(text: $text, hashtags: $hashtags, link: $link, imageLinks: $imageLinks, uid: $uid, tweetType: $tweetType, tweetedAt: $tweetedAt, likes: $likes, commentIds: $commentIds, id: $id, reshareCount: $reshareCount, retweetedBy: $retweetedBy, repliedTo: $repliedTo)';
   }
 
   @override
@@ -117,7 +122,8 @@ class TweetModel {
         listEquals(other.commentIds, commentIds) &&
         other.id == id &&
         other.reshareCount == reshareCount &&
-        other.retweetedBy == retweetedBy;
+        other.retweetedBy == retweetedBy &&
+        other.repliedTo == repliedTo;
   }
 
   @override
@@ -133,6 +139,7 @@ class TweetModel {
         commentIds.hashCode ^
         id.hashCode ^
         reshareCount.hashCode ^
-        retweetedBy.hashCode;
+        retweetedBy.hashCode ^
+        repliedTo.hashCode;
   }
 }

@@ -6,15 +6,16 @@ import 'package:twitter_clone/models/models.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 final userAPIProvider = Provider((ref) {
-  return FirebaseUserAPI();
+  return UserAPI();
 });
 
 abstract class IUserAPI {
   FutureEitherVoid saveUserData(UserModel userModel);
   Future getUserData(String uid);
+  Future getUserFromUid(String uid);
 }
 
-class FirebaseUserAPI implements IUserAPI {
+class UserAPI implements IUserAPI {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   CollectionReference get _users =>
       _firestore.collection(FirebaseConstants.usersCollection);
@@ -37,6 +38,11 @@ class FirebaseUserAPI implements IUserAPI {
 
   @override
   Future getUserData(String uid) async {
+    return _users.doc(uid).get();
+  }
+
+  @override
+  Future getUserFromUid(String uid) async {
     return _users.doc(uid).get();
   }
 }

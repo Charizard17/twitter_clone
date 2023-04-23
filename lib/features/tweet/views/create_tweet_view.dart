@@ -35,6 +35,7 @@ class _CreateTweetScreenState extends ConsumerState<CreateTweetScreen> {
     ref.read(tweetControllerProvider.notifier).shareTweet(
           images: images,
           text: tweetTextContoller.text,
+          repliedTo: '',
           context: context,
         );
   }

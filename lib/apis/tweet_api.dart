@@ -16,6 +16,7 @@ abstract class ITweetAPI {
   Stream<List<TweetModel>> getTweetsStream();
   FutureEither likeTweet(TweetModel tweet);
   FutureEither updateReshareCount(TweetModel tweet);
+  Future<List<TweetModel>> getReplies(TweetModel tweet);
 }
 
 class TweetAPI implements ITweetAPI {
@@ -99,5 +100,15 @@ class TweetAPI implements ITweetAPI {
         Failure(e.toString(), st),
       );
     }
+  }
+
+  @override
+  Future<List<TweetModel>> getReplies(TweetModel tweet) async {
+    final replies = await _tweets.where('repliedTo', isEqualTo: tweet.id).get();
+    final List<TweetModel> replyList = [];
+    for (final doc in replies.docs) {
+      replyList.add(TweetModel.fromMap(doc.data() as Map<String, dynamic>));
+    }
+    return replyList;
   }
 }
