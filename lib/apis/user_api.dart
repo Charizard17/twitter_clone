@@ -12,7 +12,7 @@ final userAPIProvider = Provider((ref) {
 abstract class IUserAPI {
   FutureEitherVoid saveUserData(UserModel userModel);
   Future getUserData(String uid);
-  Future getUserFromUid(String uid);
+  Future<List> searchUserByName(String name);
 }
 
 class UserAPI implements IUserAPI {
@@ -42,7 +42,15 @@ class UserAPI implements IUserAPI {
   }
 
   @override
-  Future getUserFromUid(String uid) async {
-    return _users.doc(uid).get();
+  Future<List<UserModel>> searchUserByName(String name) async {
+    final users = await _users
+        .where('name', isGreaterThanOrEqualTo: name)
+        .where('name', isLessThan: '${name}z')
+        .get();
+    final List<UserModel> userList = [];
+    for (final doc in users.docs) {
+      userList.add(UserModel.fromMap(doc.data() as Map<String, dynamic>));
+    }
+    return userList;
   }
 }

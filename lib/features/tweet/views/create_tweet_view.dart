@@ -88,6 +88,7 @@ class _CreateTweetScreenState extends ConsumerState<CreateTweetScreen> {
                           child: TextField(
                             controller: tweetTextContoller,
                             style: const TextStyle(fontSize: 22),
+                            cursorColor: Pallete.limeColor,
                             decoration: const InputDecoration(
                               hintText: 'What\'s happening?',
                               hintStyle: TextStyle(
@@ -145,6 +146,7 @@ class _CreateTweetScreenState extends ConsumerState<CreateTweetScreen> {
                 onTap: onPickImages,
                 child: SvgPicture.asset(
                   AssetsConstants.galleryIcon,
+                  color: Pallete.limeColor,
                 ),
               ),
             ),
@@ -155,6 +157,7 @@ class _CreateTweetScreenState extends ConsumerState<CreateTweetScreen> {
               ),
               child: SvgPicture.asset(
                 AssetsConstants.gifIcon,
+                color: Pallete.limeColor,
               ),
             ),
             Padding(
@@ -164,6 +167,7 @@ class _CreateTweetScreenState extends ConsumerState<CreateTweetScreen> {
               ),
               child: SvgPicture.asset(
                 AssetsConstants.emojiIcon,
+                color: Pallete.limeColor,
               ),
             ),
           ],

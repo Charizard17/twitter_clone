@@ -4,6 +4,7 @@ import 'package:twitter_clone/common/common.dart';
 import 'package:twitter_clone/features/tweet/controller/tweet_controller.dart';
 import 'package:twitter_clone/features/tweet/widgets/tweet_card.dart';
 import 'package:twitter_clone/models/models.dart';
+import 'package:twitter_clone/theme/theme.dart';
 
 class ReplyTweetScreen extends ConsumerWidget {
   static route(TweetModel tweet) => MaterialPageRoute(
@@ -19,6 +20,11 @@ class ReplyTweetScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    const textFieldBorder = UnderlineInputBorder(
+      borderSide: BorderSide(
+        color: Pallete.limeColor,
+      ),
+    );
     return SafeArea(
       child: Scaffold(
         appBar: AppBar(
@@ -54,8 +60,11 @@ class ReplyTweetScreen extends ConsumerWidget {
               context: context,
             );
           },
-          decoration: const InputDecoration(
+          cursorColor: Pallete.limeColor,
+          decoration: InputDecoration(
             hintText: 'Tweet your reply',
+            enabledBorder: textFieldBorder,
+            focusedBorder: textFieldBorder,
           ),
         ),
       ),

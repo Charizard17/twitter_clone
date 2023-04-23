@@ -215,7 +215,7 @@ class TweetController extends StateNotifier<bool> {
   }
 
   Future<String> getUsernameFromUid(String uid) async {
-    final document = await _userAPI.getUserFromUid(uid);
+    final document = await _userAPI.getUserData(uid);
     final data = document.data()!;
     final user = UserModel.fromMap(data);
     return user.username;
