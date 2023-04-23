@@ -63,7 +63,7 @@ class _ExploreViewState extends ConsumerState<ExploreView> {
                       itemBuilder: (BuildContext context, int index) {
                         final user = users[index];
                         return SearchTile(
-                          userModel: user,
+                          user: user,
                         );
                       });
                 },

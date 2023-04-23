@@ -17,6 +17,7 @@ abstract class ITweetAPI {
   FutureEither likeTweet(TweetModel tweet);
   FutureEither updateReshareCount(TweetModel tweet);
   Future<List<TweetModel>> getReplies(TweetModel tweet);
+  Future<List<TweetModel>> getUserTweets(String uid);
 }
 
 class TweetAPI implements ITweetAPI {
@@ -109,6 +110,18 @@ class TweetAPI implements ITweetAPI {
     for (final doc in replies.docs) {
       replyList.add(TweetModel.fromMap(doc.data() as Map<String, dynamic>));
     }
+    replyList.sort((a, b) => b.tweetedAt.compareTo(a.tweetedAt));
     return replyList;
+  }
+
+  @override
+  Future<List<TweetModel>> getUserTweets(String uid) async {
+    final tweets = await _tweets.where('uid', isEqualTo: uid).get();
+    final List<TweetModel> tweetList = [];
+    for (final doc in tweets.docs) {
+      tweetList.add(TweetModel.fromMap(doc.data() as Map<String, dynamic>));
+    }
+    tweetList.sort((a, b) => b.tweetedAt.compareTo(a.tweetedAt));
+    return tweetList;
   }
 }
