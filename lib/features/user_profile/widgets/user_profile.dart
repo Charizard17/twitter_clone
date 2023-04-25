@@ -19,148 +19,142 @@ class UserProfile extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final currentUser = ref.watch(currentUserDetailsProvider).value;
-    return SafeArea(
-      child: currentUser == null
-          ? const Loader()
-          : NestedScrollView(
-              headerSliverBuilder: (context, innerBoxIsScrolled) {
-                return [
-                  SliverAppBar(
-                    expandedHeight: 150,
-                    floating: true,
-                    snap: true,
-                    flexibleSpace: Stack(
-                      clipBehavior: Clip.none,
-                      children: [
-                        Positioned(
-                          child: user.bannerPic.isEmpty
-                              ? Container(
-                                  color: Pallete.limeColor,
-                                )
-                              : Image.network(
-                                  user.bannerPic,
-                                ),
+    return currentUser == null
+        ? const Loader()
+        : NestedScrollView(
+            headerSliverBuilder: (context, innerBoxIsScrolled) {
+              return [
+                SliverAppBar(
+                  expandedHeight: 150,
+                  floating: true,
+                  snap: true,
+                  flexibleSpace: Stack(
+                    clipBehavior: Clip.none,
+                    children: [
+                      Container(
+                        width: double.infinity,
+                        height: 150,
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(100),
                         ),
-                        Positioned(
-                          bottom: 0,
-                          left: 10,
-                          child: Container(
-                            width: 100.0,
-                            height: 100.0,
-                            decoration: BoxDecoration(
-                              color: Pallete.backgroundColor,
-                              image: DecorationImage(
-                                image: NetworkImage(user.profilePic),
-                                fit: BoxFit.cover,
+                        child: user.bannerPic.isEmpty
+                            ? Container(
+                                color: Pallete.limeColor,
+                              )
+                            : Image.network(
+                                currentUser.bannerPic,
+                                fit: BoxFit.fitWidth,
                               ),
-                              borderRadius: const BorderRadius.all(
-                                Radius.circular(50),
-                              ),
-                              border: Border.all(
-                                color: Pallete.backgroundColor,
-                                width: 5,
-                              ),
+                      ),
+                      Positioned(
+                        bottom: 20,
+                        left: 20,
+                        child: CircleAvatar(
+                          radius: 45,
+                          backgroundColor: Pallete.backgroundColor,
+                          child: CircleAvatar(
+                            backgroundImage:
+                                NetworkImage(currentUser.profilePic),
+                            radius: 40,
+                          ),
+                        ),
+                      ),
+                      Container(
+                        alignment: Alignment.bottomRight,
+                        margin: const EdgeInsets.all(20),
+                        child: OutlinedButton(
+                          onPressed: () {
+                            if (currentUser.uid == user.uid) {
+                              Navigator.push(
+                                context,
+                                EditProfileView.route(),
+                              );
+                            }
+                          },
+                          style: ElevatedButton.styleFrom(
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(20),
+                            ),
+                            side: const BorderSide(
+                              color: Pallete.whiteColor,
+                              width: 2,
+                            ),
+                            padding: const EdgeInsets.symmetric(horizontal: 20),
+                          ),
+                          child: Text(
+                            currentUser.uid == user.uid
+                                ? 'Edit Profile'
+                                : 'Follow',
+                            style: const TextStyle(
+                              color: Pallete.whiteColor,
                             ),
                           ),
                         ),
-                        Container(
-                          alignment: Alignment.bottomRight,
-                          margin: const EdgeInsets.all(20),
-                          child: OutlinedButton(
-                            onPressed: () {
-                              if (currentUser.uid == user.uid) {
-                                Navigator.push(
-                                  context,
-                                  EditProfileView.route(),
-                                );
-                              }
-                            },
-                            style: ElevatedButton.styleFrom(
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(20),
-                              ),
-                              side: const BorderSide(
-                                color: Pallete.whiteColor,
-                                width: 2,
-                              ),
-                              padding:
-                                  const EdgeInsets.symmetric(horizontal: 20),
-                            ),
-                            child: Text(
-                              currentUser.uid == user.uid
-                                  ? 'Edit Profile'
-                                  : 'Follow',
-                              style: const TextStyle(
-                                color: Pallete.whiteColor,
-                              ),
-                            ),
+                      ),
+                    ],
+                  ),
+                ),
+                SliverPadding(
+                  padding: const EdgeInsets.all(8),
+                  sliver: SliverList(
+                    delegate: SliverChildListDelegate(
+                      [
+                        Text(
+                          user.name,
+                          style: const TextStyle(
+                            fontSize: 25,
+                            fontWeight: FontWeight.bold,
                           ),
                         ),
+                        Text(
+                          '@${user.username}',
+                          style: const TextStyle(
+                            fontSize: 17,
+                            color: Pallete.greyColor,
+                          ),
+                        ),
+                        Text(
+                          user.bio,
+                          style: const TextStyle(
+                            fontSize: 17,
+                          ),
+                        ),
+                        const SizedBox(height: 10),
+                        Row(
+                          children: [
+                            FollowCount(
+                              count: user.following.length,
+                              text: 'Following',
+                            ),
+                            const SizedBox(width: 20),
+                            FollowCount(
+                              count: user.followers.length,
+                              text: 'Followers',
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 5),
+                        const Divider(color: Pallete.greyColor)
                       ],
                     ),
                   ),
-                  SliverPadding(
-                    padding: const EdgeInsets.all(8),
-                    sliver: SliverList(
-                      delegate: SliverChildListDelegate(
-                        [
-                          Text(
-                            user.name,
-                            style: const TextStyle(
-                              fontSize: 25,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                          Text(
-                            '@${user.username}',
-                            style: const TextStyle(
-                              fontSize: 17,
-                              color: Pallete.greyColor,
-                            ),
-                          ),
-                          Text(
-                            user.bio,
-                            style: const TextStyle(
-                              fontSize: 17,
-                            ),
-                          ),
-                          const SizedBox(height: 10),
-                          Row(
-                            children: [
-                              FollowCount(
-                                count: user.following.length,
-                                text: 'Following',
-                              ),
-                              const SizedBox(width: 20),
-                              FollowCount(
-                                count: user.followers.length,
-                                text: 'Followers',
-                              ),
-                            ],
-                          ),
-                          const SizedBox(height: 5),
-                          const Divider(color: Pallete.greyColor)
-                        ],
-                      ),
+                ),
+              ];
+            },
+            body: ref.watch(getUserTweetsProvider(user.uid)).when(
+                data: (tweets) {
+                  return ListView.builder(
+                    itemCount: tweets.length,
+                    itemBuilder: (BuildContext context, int index) {
+                      final tweet = tweets[index];
+                      return TweetCard(tweet: tweet);
+                    },
+                  );
+                },
+                error: (error, st) => ErrorText(
+                      error: error.toString(),
                     ),
-                  ),
-                ];
-              },
-              body: ref.watch(getUserTweetsProvider(user.uid)).when(
-                  data: (tweets) {
-                    return ListView.builder(
-                      itemCount: tweets.length,
-                      itemBuilder: (BuildContext context, int index) {
-                        final tweet = tweets[index];
-                        return TweetCard(tweet: tweet);
-                      },
-                    );
-                  },
-                  error: (error, st) => ErrorText(
-                        error: error.toString(),
-                      ),
-                  loading: () => const Loader()),
-            ),
-    );
+                loading: () => const Loader()),
+          );
   }
 }

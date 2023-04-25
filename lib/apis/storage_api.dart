@@ -12,21 +12,22 @@ final storageAPIProvider = Provider((ref) {
 class StorageAPI {
   final FirebaseStorage _storage = FirebaseStorage.instanceFor();
 
+  Future<String> uploadImage(File file) async {
+    final fileName = const Uuid().v1();
+    final ref = _storage.ref('${FirebaseConstants.filesFolder}/$fileName.jpg');
+    final url = await ref.putFile(file).then((_) => ref.getDownloadURL());
+    return url;
+  }
+
   Future<List<String>> uploadImages(List<File> files) async {
-    final List<String> uploadedImageUrls = [];
-    const uuid = Uuid();
-
-    for (final file in files) {
-      final String fileName = uuid.v1();
-      final Reference storageRef = _storage
+    return Future.wait(files.map((file) async {
+      final fileName = const Uuid().v1();
+      final downloadUrl = await _storage
           .ref()
-          .child('${FirebaseConstants.filesFolder}/$fileName.jpg');
-      final UploadTask uploadTask = storageRef.putFile(file);
-      final TaskSnapshot downloadUrl = (await uploadTask);
-      final String url = await downloadUrl.ref.getDownloadURL();
-      uploadedImageUrls.add(url);
-    }
-
-    return uploadedImageUrls;
+          .child('${FirebaseConstants.filesFolder}/$fileName.jpg')
+          .putFile(file)
+          .then((task) => task.ref.getDownloadURL());
+      return downloadUrl;
+    }));
   }
 }

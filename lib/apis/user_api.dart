@@ -11,6 +11,7 @@ final userAPIProvider = Provider((ref) {
 
 abstract class IUserAPI {
   FutureEitherVoid saveUserData(UserModel userModel);
+  FutureEitherVoid updateUserData(UserModel userModel);
   Future getUserData(String uid);
   Future<List> searchUserByName(String name);
 }
@@ -24,6 +25,22 @@ class UserAPI implements IUserAPI {
   FutureEitherVoid saveUserData(UserModel userModel) async {
     try {
       await _users.doc(userModel.uid).set(userModel.toMap());
+      return right(null);
+    } on FirebaseException catch (e, st) {
+      return left(
+        Failure(e.message ?? 'Some unexpected error occured', st),
+      );
+    } catch (e, st) {
+      return left(
+        Failure(e.toString(), st),
+      );
+    }
+  }
+
+  @override
+  FutureEitherVoid updateUserData(UserModel userModel) async {
+    try {
+      await _users.doc(userModel.uid).update(userModel.toMap());
       return right(null);
     } on FirebaseException catch (e, st) {
       return left(

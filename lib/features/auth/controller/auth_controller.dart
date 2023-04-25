@@ -70,7 +70,7 @@ class AuthController extends StateNotifier<bool> {
           followers: const [],
           following: const [],
           profilePic: ExternalConstants.defaultAvatar,
-          bannerPic: ExternalConstants.defaultBanner,
+          bannerPic: '',
           uid: r.user!.uid,
           bio: '',
           isTwitterLime: false,
