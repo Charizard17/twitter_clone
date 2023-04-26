@@ -13,6 +13,7 @@ abstract class IUserAPI {
   FutureEitherVoid saveUserData(UserModel userModel);
   FutureEitherVoid updateUserData(UserModel userModel);
   Future getUserData(String uid);
+  Stream getUserDataStream(String uid);
   Future<List> searchUserByName(String name);
 }
 
@@ -20,6 +21,9 @@ class UserAPI implements IUserAPI {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   CollectionReference get _users =>
       _firestore.collection(FirebaseConstants.usersCollection);
+  Stream<QuerySnapshot> get _usersStream => FirebaseFirestore.instance
+      .collection(FirebaseConstants.usersCollection)
+      .snapshots();
 
   @override
   FutureEitherVoid saveUserData(UserModel userModel) async {
@@ -69,5 +73,12 @@ class UserAPI implements IUserAPI {
       userList.add(UserModel.fromMap(doc.data() as Map<String, dynamic>));
     }
     return userList;
+  }
+
+  @override
+  Stream getUserDataStream(String uid) {
+    final userStream = _users.doc(uid).snapshots().map((snapshot) =>
+        UserModel.fromMap(snapshot.data() as Map<String, dynamic>));
+    return userStream;
   }
 }
