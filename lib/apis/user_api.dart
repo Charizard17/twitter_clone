@@ -10,8 +10,10 @@ final userAPIProvider = Provider((ref) {
 });
 
 abstract class IUserAPI {
-  FutureEitherVoid saveUserData(UserModel userModel);
-  FutureEitherVoid updateUserData(UserModel userModel);
+  FutureEitherVoid saveUserData(UserModel currentUser);
+  FutureEitherVoid updateUserData(UserModel currentUser);
+  FutureEitherVoid followUser(UserModel user);
+  FutureEitherVoid addToFollowing(UserModel currentUser);
   Future getUserData(String uid);
   Stream getUserDataStream(String uid);
   Future<List> searchUserByName(String name);
@@ -26,9 +28,9 @@ class UserAPI implements IUserAPI {
       .snapshots();
 
   @override
-  FutureEitherVoid saveUserData(UserModel userModel) async {
+  FutureEitherVoid saveUserData(UserModel currentUser) async {
     try {
-      await _users.doc(userModel.uid).set(userModel.toMap());
+      await _users.doc(currentUser.uid).set(currentUser.toMap());
       return right(null);
     } on FirebaseException catch (e, st) {
       return left(
@@ -42,9 +44,9 @@ class UserAPI implements IUserAPI {
   }
 
   @override
-  FutureEitherVoid updateUserData(UserModel userModel) async {
+  FutureEitherVoid updateUserData(UserModel currentUser) async {
     try {
-      await _users.doc(userModel.uid).update(userModel.toMap());
+      await _users.doc(currentUser.uid).update(currentUser.toMap());
       return right(null);
     } on FirebaseException catch (e, st) {
       return left(
@@ -54,6 +56,34 @@ class UserAPI implements IUserAPI {
       return left(
         Failure(e.toString(), st),
       );
+    }
+  }
+
+  @override
+  FutureEitherVoid followUser(UserModel user) async {
+    try {
+      await _users
+          .doc(user.uid)
+          .update({FirebaseConstants.followers: user.followers});
+      return right(null);
+    } on FirebaseException catch (e, st) {
+      return left(Failure(e.message ?? 'Some unexpected error occurred', st));
+    } catch (e, st) {
+      return left(Failure(e.toString(), st));
+    }
+  }
+
+  @override
+  FutureEitherVoid addToFollowing(UserModel currentUser) async {
+    try {
+      await _users
+          .doc(currentUser.uid)
+          .update({FirebaseConstants.following: currentUser.following});
+      return right(null);
+    } on FirebaseException catch (e, st) {
+      return left(Failure(e.message ?? 'Some unexpected error occurred', st));
+    } catch (e, st) {
+      return left(Failure(e.toString(), st));
     }
   }
 

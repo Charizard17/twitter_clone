@@ -12,6 +12,7 @@ import 'package:twitter_clone/features/tweet/views/reply_tweet_view.dart';
 import 'package:twitter_clone/features/tweet/widgets/carousel_image.dart';
 import 'package:twitter_clone/features/tweet/widgets/hashtag_text.dart';
 import 'package:twitter_clone/features/tweet/widgets/tweet_icon_button.dart';
+import 'package:twitter_clone/features/user_profile/view/user_profile_view.dart';
 import 'package:twitter_clone/models/tweet_model.dart';
 import 'package:twitter_clone/theme/theme.dart';
 import 'package:timeago/timeago.dart' as timeago;
@@ -26,6 +27,8 @@ class TweetCard extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final currentUser = ref.watch(currentUserDetailsProvider).value;
+    final userProfileFromTweetUid =
+        ref.watch(userDetailsProvider(tweet.uid)).value;
     return currentUser == null
         ? const SizedBox()
         : ref.watch(userDetailsProvider(tweet.uid)).when(
@@ -44,9 +47,20 @@ class TweetCard extends ConsumerWidget {
                         children: [
                           Container(
                             margin: const EdgeInsets.all(10),
-                            child: CircleAvatar(
-                              backgroundImage: NetworkImage(user.profilePic),
-                              radius: 30,
+                            child: GestureDetector(
+                              onTap: userProfileFromTweetUid == null
+                                  ? () {}
+                                  : () {
+                                      Navigator.push(
+                                        context,
+                                        UserProfileView.route(
+                                            userProfileFromTweetUid),
+                                      );
+                                    },
+                              child: CircleAvatar(
+                                backgroundImage: NetworkImage(user.profilePic),
+                                radius: 30,
+                              ),
                             ),
                           ),
                           Expanded(
