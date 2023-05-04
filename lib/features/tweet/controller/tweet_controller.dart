@@ -5,9 +5,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:twitter_clone/apis/storage_api.dart';
 import 'package:twitter_clone/apis/tweet_api.dart';
 import 'package:twitter_clone/apis/user_api.dart';
-import 'package:twitter_clone/core/enums/tweet_type_enum.dart';
+import 'package:twitter_clone/core/core.dart';
 import 'package:twitter_clone/core/utils.dart';
 import 'package:twitter_clone/features/auth/controller/auth_controller.dart';
+import 'package:twitter_clone/features/notifications/controller/notification_controller.dart';
 import 'package:twitter_clone/models/models.dart';
 import 'package:uuid/uuid.dart';
 
@@ -18,6 +19,8 @@ final tweetControllerProvider = StateNotifierProvider<TweetController, bool>(
       tweetAPI: ref.watch(tweetAPIProvider),
       storageAPI: ref.watch(storageAPIProvider),
       userAPI: ref.watch(userAPIProvider),
+      notificationController:
+          ref.watch(notificationControllerProvider.notifier),
     );
   },
 );
@@ -46,16 +49,19 @@ class TweetController extends StateNotifier<bool> {
   final TweetAPI _tweetAPI;
   final StorageAPI _storageAPI;
   final UserAPI _userAPI;
+  final NotificationController _notificationController;
   final Ref _ref;
   TweetController({
     required Ref ref,
     required TweetAPI tweetAPI,
     required StorageAPI storageAPI,
     required UserAPI userAPI,
+    required NotificationController notificationController,
   })  : _ref = ref,
         _tweetAPI = tweetAPI,
         _storageAPI = storageAPI,
         _userAPI = userAPI,
+        _notificationController = notificationController,
         super(false);
 
   Future<List<TweetModel>> getTweets() async {
@@ -76,7 +82,14 @@ class TweetController extends StateNotifier<bool> {
       likes: likes,
     );
     final res = await _tweetAPI.likeTweet(tweet);
-    res.fold((l) => null, (r) => null);
+    res.fold((l) => null, (r) {
+      _notificationController.createNotification(
+        text: tweet.text,
+        postId: tweet.id,
+        notificationType: NotificationType.like,
+        uid: tweet.uid,
+      );
+    });
   }
 
   void reshareTweet(

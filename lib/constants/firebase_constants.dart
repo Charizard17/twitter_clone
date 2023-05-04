@@ -1,6 +1,7 @@
 class FirebaseConstants {
   static const usersCollection = 'users';
   static const tweetsCollection = 'tweets';
+  static const notificationsCollection = 'notifications';
   static const filesFolder = 'files';
 
   // parameters
