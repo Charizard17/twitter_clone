@@ -11,6 +11,7 @@ final notificationAPIProvider = Provider((ref) {
 
 abstract class INotificationAPI {
   FutureEitherVoid createNotification(NotificationModel notification);
+  Stream<List<NotificationModel>> getNotificationsStream(String uid);
 }
 
 class NotificationAPI implements INotificationAPI {
@@ -32,5 +33,16 @@ class NotificationAPI implements INotificationAPI {
         Failure(e.toString(), st),
       );
     }
+  }
+
+  @override
+  Stream<List<NotificationModel>> getNotificationsStream(String uid) {
+    return _notifications
+        .where(FirebaseConstants.uid, isEqualTo: uid)
+        .snapshots()
+        .map((snapshot) => snapshot.docs
+            .map((doc) =>
+                NotificationModel.fromMap(doc.data() as Map<String, dynamic>))
+            .toList());
   }
 }

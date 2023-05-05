@@ -11,6 +11,12 @@ final notificationControllerProvider =
   );
 });
 
+final getNotificationsProvider =
+    StreamProvider.autoDispose.family((ref, String uid) {
+  final notificationAPI = ref.watch(notificationAPIProvider);
+  return notificationAPI.getNotificationsStream(uid);
+});
+
 class NotificationController extends StateNotifier<bool> {
   final NotificationAPI _notificationAPI;
   NotificationController({
@@ -33,6 +39,6 @@ class NotificationController extends StateNotifier<bool> {
       notificationType: notificationType,
     );
     final res = await _notificationAPI.createNotification(notification);
-    res.fold((l) => print(l.message), (r) => null);
+    res.fold((l) => null, (r) => null);
   }
 }

@@ -5,6 +5,7 @@ class FirebaseConstants {
   static const filesFolder = 'files';
 
   // parameters
+  static const uid = 'uid';
   static const tweetedAt = 'tweetedAt';
   static const likes = 'likes';
   static const reshareCount = 'reshareCount';
