@@ -4,7 +4,6 @@ import 'package:fpdart/fpdart.dart';
 import 'package:twitter_clone/constants/constants.dart';
 import 'package:twitter_clone/core/core.dart';
 import 'package:twitter_clone/models/models.dart';
-import 'package:uuid/uuid.dart';
 
 final tweetAPIProvider = Provider((ref) {
   return TweetAPI();
@@ -32,9 +31,7 @@ class TweetAPI implements ITweetAPI {
   @override
   FutureEitherVoid shareTweet(TweetModel tweet) async {
     try {
-      final uuid = const Uuid().v1();
-      tweet = tweet.copyWith(id: uuid);
-      await _tweets.doc(uuid).set(tweet.toMap());
+      await _tweets.doc(tweet.id).set(tweet.toMap());
       return right(null);
     } on FirebaseException catch (e, st) {
       return left(

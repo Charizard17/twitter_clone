@@ -84,7 +84,7 @@ class TweetController extends StateNotifier<bool> {
     final res = await _tweetAPI.likeTweet(tweet);
     res.fold((l) => null, (r) {
       _notificationController.createNotification(
-        text: tweet.text,
+        text: '${currentUser.name} liked your tweet!',
         postId: tweet.id,
         notificationType: NotificationType.like,
         uid: tweet.uid,
@@ -113,19 +113,25 @@ class TweetController extends StateNotifier<bool> {
           reshareCount: 0,
         );
         final res2 = await _tweetAPI.shareTweet(tweet);
-        res2.fold(
-          (l) => showSnackBar(context, l.message),
-          (r) => showSnackBar(context, 'Retweeted!'),
-        );
+        res2.fold((l) => showSnackBar(context, l.message), (r) {
+          _notificationController.createNotification(
+            text: '${currentUser.name} reshared your tweet!',
+            postId: tweet.id,
+            notificationType: NotificationType.retweet,
+            uid: tweet.uid,
+          );
+          showSnackBar(context, 'Retweeted!');
+        });
       },
     );
   }
 
   void shareTweet({
+    required BuildContext context,
     required List<File> images,
     required String text,
     required String repliedTo,
-    required BuildContext context,
+    required String repliedToUserId,
   }) {
     if (text.isEmpty) {
       showSnackBar(context, 'Please enter text');
@@ -134,9 +140,17 @@ class TweetController extends StateNotifier<bool> {
 
     if (images.isNotEmpty) {
       _shareImageTweet(
-          images: images, text: text, repliedTo: repliedTo, context: context);
+          images: images,
+          text: text,
+          repliedTo: repliedTo,
+          context: context,
+          repliedToUserId: repliedToUserId);
     } else {
-      _shareTextTweet(text: text, repliedTo: repliedTo, context: context);
+      _shareTextTweet(
+          text: text,
+          repliedTo: repliedTo,
+          context: context,
+          repliedToUserId: repliedToUserId);
     }
   }
 
@@ -149,6 +163,7 @@ class TweetController extends StateNotifier<bool> {
     required List<File> images,
     required String text,
     required String repliedTo,
+    required String repliedToUserId,
     required BuildContext context,
   }) async {
     state = true;
@@ -172,19 +187,30 @@ class TweetController extends StateNotifier<bool> {
       repliedTo: repliedTo,
     );
     final res = await _tweetAPI.shareTweet(tweet);
+    res.fold((l) => showSnackBar(context, l.message), (r) {
+      if (repliedToUserId.isNotEmpty) {
+        _notificationController.createNotification(
+          text: '${user.name} replied to your tweet!',
+          postId: tweet.id,
+          notificationType: NotificationType.retweet,
+          uid: tweet.uid,
+        );
+      }
+    });
     state = false;
-    res.fold((l) => showSnackBar(context, l.message), (r) => null);
   }
 
   void _shareTextTweet({
     required String text,
     required String repliedTo,
+    required String repliedToUserId,
     required BuildContext context,
   }) async {
     state = true;
     final hashtags = _getHashtagsFromText(text);
     final String link = _getLinkFromText(text);
     final user = _ref.read(currentUserDetailsProvider).value!;
+    final uuid = const Uuid().v1();
     TweetModel tweet = TweetModel(
       text: text,
       hashtags: hashtags,
@@ -195,14 +221,23 @@ class TweetController extends StateNotifier<bool> {
       tweetedAt: DateTime.now(),
       likes: const [],
       commentIds: const [],
-      id: '',
+      id: uuid,
       reshareCount: 0,
       retweetedBy: '',
       repliedTo: repliedTo,
     );
     final res = await _tweetAPI.shareTweet(tweet);
+    res.fold((l) => showSnackBar(context, l.message), (r) {
+      if (repliedToUserId.isNotEmpty) {
+        _notificationController.createNotification(
+          text: '${user.name} replied to your tweet!',
+          postId: tweet.id,
+          notificationType: NotificationType.retweet,
+          uid: tweet.uid,
+        );
+      }
+    });
     state = false;
-    res.fold((l) => showSnackBar(context, l.message), (r) => null);
   }
 
   String _getLinkFromText(String text) {
