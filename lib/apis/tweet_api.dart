@@ -17,6 +17,7 @@ abstract class ITweetAPI {
   FutureEither updateReshareCount(TweetModel tweet);
   Future<List<TweetModel>> getReplies(TweetModel tweet);
   Future<List<TweetModel>> getUserTweets(String uid);
+  Future<List<TweetModel>> getTweetsByHashtag(String hashtag);
 }
 
 class TweetAPI implements ITweetAPI {
@@ -102,7 +103,9 @@ class TweetAPI implements ITweetAPI {
 
   @override
   Future<List<TweetModel>> getReplies(TweetModel tweet) async {
-    final replies = await _tweets.where('repliedTo', isEqualTo: tweet.id).get();
+    final replies = await _tweets
+        .where(FirebaseConstants.repliedTo, isEqualTo: tweet.id)
+        .get();
     final List<TweetModel> replyList = [];
     for (final doc in replies.docs) {
       replyList.add(TweetModel.fromMap(doc.data() as Map<String, dynamic>));
@@ -113,7 +116,22 @@ class TweetAPI implements ITweetAPI {
 
   @override
   Future<List<TweetModel>> getUserTweets(String uid) async {
-    final tweets = await _tweets.where('uid', isEqualTo: uid).get();
+    final tweets =
+        await _tweets.where(FirebaseConstants.uid, isEqualTo: uid).get();
+    final List<TweetModel> tweetList = [];
+    for (final doc in tweets.docs) {
+      tweetList.add(TweetModel.fromMap(doc.data() as Map<String, dynamic>));
+    }
+    tweetList.sort((a, b) => b.tweetedAt.compareTo(a.tweetedAt));
+    return tweetList;
+  }
+
+  @override
+  Future<List<TweetModel>> getTweetsByHashtag(String hashtag) async {
+    final tweets = await _tweets
+        .where(FirebaseConstants.hashtags, arrayContains: hashtag)
+        .orderBy(FirebaseConstants.tweetedAt, descending: true)
+        .get();
     final List<TweetModel> tweetList = [];
     for (final doc in tweets.docs) {
       tweetList.add(TweetModel.fromMap(doc.data() as Map<String, dynamic>));

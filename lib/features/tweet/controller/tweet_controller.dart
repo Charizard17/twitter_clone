@@ -35,6 +35,11 @@ final getRepliesProvider = FutureProvider.family((ref, TweetModel tweet) {
   return tweetController.getReplies(tweet);
 });
 
+final getTweetsByHashtagProvider = FutureProvider.family((ref, String hashtag) {
+  final tweetController = ref.watch(tweetControllerProvider.notifier);
+  return tweetController.getTweetsByHashtag(hashtag);
+});
+
 final getTweetsStreamProvider = StreamProvider.autoDispose((ref) {
   final tweetAPI = ref.watch(tweetAPIProvider);
   return tweetAPI.getTweetsStream();
@@ -156,8 +161,11 @@ class TweetController extends StateNotifier<bool> {
   }
 
   Future<List<TweetModel>> getReplies(TweetModel tweet) async {
-    final tweetList = await _tweetAPI.getReplies(tweet);
-    return tweetList;
+    return await _tweetAPI.getReplies(tweet);
+  }
+
+  Future<List<TweetModel>> getTweetsByHashtag(String hashtag) async {
+    return await _tweetAPI.getTweetsByHashtag(hashtag);
   }
 
   void _shareImageTweet({

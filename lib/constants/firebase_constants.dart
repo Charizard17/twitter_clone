@@ -11,4 +11,6 @@ class FirebaseConstants {
   static const reshareCount = 'reshareCount';
   static const followers = 'followers';
   static const following = 'following';
+  static const repliedTo = 'repliedTo';
+  static const hashtags = 'hashtags';
 }
