@@ -118,7 +118,9 @@ class TweetCard extends ConsumerWidget {
                                 Row(
                                   children: [
                                     Container(
-                                      margin: const EdgeInsets.only(right: 5),
+                                      margin: EdgeInsets.only(
+                                        right: user.isTwitterLime ? 1 : 5,
+                                      ),
                                       child: Text(
                                         user.name,
                                         style: const TextStyle(
@@ -127,6 +129,15 @@ class TweetCard extends ConsumerWidget {
                                         ),
                                       ),
                                     ),
+                                    if (user.isTwitterLime)
+                                      Padding(
+                                        padding:
+                                            const EdgeInsets.only(right: 5),
+                                        child: SvgPicture.asset(
+                                          AssetsConstants.verifiedIcon,
+                                          color: Pallete.limeColor,
+                                        ),
+                                      ),
                                     Text(
                                       '@${user.username} · ${timeago.format(
                                         tweet.tweetedAt,
