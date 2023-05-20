@@ -152,6 +152,7 @@ class TweetController extends StateNotifier<bool> {
           context: context,
           repliedToUserId: repliedToUserId);
     }
+    Navigator.pop(context);
   }
 
   Future<List<TweetModel>> getReplies(TweetModel tweet) async {
